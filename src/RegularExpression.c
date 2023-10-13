@@ -7,6 +7,7 @@
 #include <Dictionary/Word.h>
 #include <string.h>
 #include <stdio.h>
+#include <Stack.h>
 #include "RegularExpression.h"
 
 static char* keyboard_characters = "abcçdefgğhıijklmnoöpqrsştuüvwxyzABCÇDEFGĞHIİJKLMNOÖPQRSŞTUÜVWXYZ0123456789_:,;/=<>£#${}`@&%^!";
@@ -92,10 +93,13 @@ void add_multiple_transitions_and_update_state(Automaton_ptr automaton,
 }
 
 Automaton_ptr convert_to_nfa(char *expression) {
-    State_ptr current, previous = NULL, next = NULL, new_state;
+    State_ptr current, previous = NULL, next = NULL, new_state, previous_group, next_group;
+    Stack_ptr previous_stack, next_stack;
     String_ptr st, st2;
     bool in_brackets = false, in_parentheses = false, done;
     int index = 1;
+    previous_stack = create_stack();
+    next_stack = create_stack();
     Automaton_ptr automaton = create_automaton();
     State_ptr start_state = create_state("q0", false);
     add_state(automaton, start_state);
@@ -124,12 +128,31 @@ Automaton_ptr convert_to_nfa(char *expression) {
                 if (strcmp(st->s, "(") == 0){
                     in_parentheses = true;
                     next = create_new_state(automaton, &index);
+                    push(next_stack, next);
                     previous = current;
+                    push(previous_stack, previous);
                 } else {
                     if (strcmp(st->s, ")") == 0){
                         in_parentheses = false;
-                        add_transition_nfa(current, next, "");
-                        current = next;
+                        next_group = pop(next_stack);
+                        previous_group = pop(previous_stack);
+                        add_transition_nfa(current, next_group, "");
+                        current = next_group;
+                        if (i + 1 < word_size(expression)){
+                            st2 = char_at(expression, i + 1);
+                            if (strcmp(st2->s, "?") == 0 || strcmp(st2->s, "+") == 0 || strcmp(st2->s, "*") == 0){
+                                if (strcmp(st2->s, "?") == 0){
+                                    add_transition_nfa(previous_group, next_group, "");
+                                } else {
+                                    if (strcmp(st2->s, "*") == 0){
+                                        add_transition_nfa(previous_group, next_group, "");
+                                    }
+                                    add_transition_nfa(next_group, previous_group, "");
+                                }
+                                i++;
+                            }
+                            free_string_ptr(st2);
+                        }
                     } else {
                         if (strcmp(st->s, "[") == 0){
                             in_brackets = true;
@@ -142,8 +165,8 @@ Automaton_ptr convert_to_nfa(char *expression) {
                                 current = next;
                             } else {
                                 if (strcmp(st->s, "|") == 0){
-                                    add_transition_nfa(current, next, "");
-                                    current = previous;
+                                    add_transition_nfa(current, peek(next_stack), "");
+                                    current = peek(previous_stack);
                                 } else {
                                     if (strcmp(st->s, ".") == 0){
                                         add_multiple_transitions_and_update_state(automaton, in_brackets, in_parentheses, &index, &previous, &current, &next, 0, word_size(keyboard_characters) - 1);
@@ -167,41 +190,16 @@ Automaton_ptr convert_to_nfa(char *expression) {
                                             free_string_ptr(st2);
                                         } else {
                                             if (strcmp(st->s, "?") == 0){
-                                                if (next != NULL){
-                                                    add_transition_nfa(previous, next, "");
-                                                } else {
-                                                    add_transition_nfa(previous, current, "");
-                                                }
+                                                add_transition_nfa(previous, next != NULL ? next : current, "");
                                             } else {
+                                                new_state = create_new_state(automaton, &index);
                                                 if (strcmp(st->s, "*") == 0){
-                                                    new_state = create_new_state(automaton, &index);
-                                                    if (next != NULL){
-                                                        add_transition_nfa(previous, next, "");
-                                                        add_transition_nfa(next, previous, "");
-                                                        add_transition_nfa(next, new_state, "");
-                                                        previous = next;
-                                                    } else {
-                                                        add_transition_nfa(previous, current, "");
-                                                        add_transition_nfa(current, previous, "");
-                                                        add_transition_nfa(current, new_state, "");
-                                                        previous = current;
-                                                    }
-                                                    current = new_state;
-                                                } else {
-                                                    if (strcmp(st->s, "+") == 0){
-                                                        new_state = create_new_state(automaton, &index);
-                                                        if (next != NULL){
-                                                            add_transition_nfa(next, previous, "");
-                                                            add_transition_nfa(next, new_state, "");
-                                                            previous = next;
-                                                        } else {
-                                                            add_transition_nfa(current, previous, "");
-                                                            add_transition_nfa(current, new_state, "");
-                                                            previous = current;
-                                                        }
-                                                        current = new_state;
-                                                    }
+                                                    add_transition_nfa(previous, next != NULL ? next : current, "");
                                                 }
+                                                add_transition_nfa(next != NULL ? next : current, previous, "");
+                                                add_transition_nfa(next != NULL ? next : current, new_state, "");
+                                                previous = next != NULL ? next : current;
+                                                current = new_state;
                                             }
                                         }
                                     }
@@ -216,6 +214,8 @@ Automaton_ptr convert_to_nfa(char *expression) {
         }
         free_string_ptr(st);
     }
+    free_stack(previous_stack, NULL);
+    free_stack(next_stack, NULL);
     current->is_final = true;
     return automaton;
 }
