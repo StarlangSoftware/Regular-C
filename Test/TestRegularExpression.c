@@ -6,7 +6,7 @@
 #include "../src/RegularExpression.h"
 
 void check_match(Regular_expression_ptr re, char* word){
-    if (!matches(re, word)){
+    if (!full_matches(re, word)){
         printf("Mismatch %s %s\n", re->expression, word);
     }
 }

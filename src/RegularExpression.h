@@ -22,9 +22,9 @@ void free_regular_expression(Regular_expression_ptr regular_expression);
 
 Automaton_ptr convert_to_nfa(char* expression);
 
-bool matches(const Regular_expression* regex, const char* string);
+bool full_matches(const Regular_expression* regex, const char* string);
 
-State_ptr create_new_state(Automaton_ptr automaton, int index);
+State_ptr create_new_state(Automaton_ptr automaton, int* index);
 
 void add_transition(char* st, State_ptr from_state, State_ptr to_state);
 

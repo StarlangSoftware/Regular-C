@@ -25,9 +25,10 @@ void free_regular_expression(Regular_expression_ptr regular_expression) {
     free(regular_expression);
 }
 
-State_ptr create_new_state(Automaton_ptr automaton, int index){
+State_ptr create_new_state(Automaton_ptr automaton, int* index){
     char name[4];
-    sprintf(name, "q%d", index);
+    sprintf(name, "q%d", *index);
+    (*index)++;
     State_ptr state = create_state(name, false);
     add_state(automaton, state);
     return state;
@@ -57,8 +58,7 @@ void add_transition_and_update_state(Automaton_ptr automaton,
                                      State_ptr* current,
                                      State_ptr next){
     if (!in_brackets){
-        State_ptr  new_state = create_new_state(automaton, *index);
-        (*index)++;
+        State_ptr  new_state = create_new_state(automaton, index);
         add_transition(s, *current, new_state);
         if (!in_parentheses){
             *previous = *current;
@@ -79,8 +79,7 @@ void add_multiple_transitions_and_update_state(Automaton_ptr automaton,
                                                int index1,
                                                int index2) {
     if (!in_brackets){
-        State_ptr new_state = create_new_state(automaton, *index);
-        (*index)++;
+        State_ptr new_state = create_new_state(automaton, index);
         add_multiple_transitions(index1, index2, *current, new_state);
         if (!in_parentheses){
             *previous = *current;
@@ -124,7 +123,7 @@ Automaton_ptr convert_to_nfa(char *expression) {
             if (strstr(special_characters, st->s) != NULL){
                 if (strcmp(st->s, "(") == 0){
                     in_parentheses = true;
-                    next = create_new_state(automaton, index++);
+                    next = create_new_state(automaton, &index);
                     previous = current;
                 } else {
                     if (strcmp(st->s, ")") == 0){
@@ -134,7 +133,7 @@ Automaton_ptr convert_to_nfa(char *expression) {
                     } else {
                         if (strcmp(st->s, "[") == 0){
                             in_brackets = true;
-                            next = create_new_state(automaton, index++);
+                            next = create_new_state(automaton, &index);
                             previous = current;
                         } else {
                             if (strcmp(st->s, "]") == 0){
@@ -175,7 +174,7 @@ Automaton_ptr convert_to_nfa(char *expression) {
                                                 }
                                             } else {
                                                 if (strcmp(st->s, "*") == 0){
-                                                    new_state = create_new_state(automaton, index++);
+                                                    new_state = create_new_state(automaton, &index);
                                                     if (next != NULL){
                                                         add_transition_nfa(previous, next, "");
                                                         add_transition_nfa(next, previous, "");
@@ -190,7 +189,7 @@ Automaton_ptr convert_to_nfa(char *expression) {
                                                     current = new_state;
                                                 } else {
                                                     if (strcmp(st->s, "+") == 0){
-                                                        new_state = create_new_state(automaton, index++);
+                                                        new_state = create_new_state(automaton, &index);
                                                         if (next != NULL){
                                                             add_transition_nfa(next, previous, "");
                                                             add_transition_nfa(next, new_state, "");
@@ -221,6 +220,6 @@ Automaton_ptr convert_to_nfa(char *expression) {
     return automaton;
 }
 
-bool matches(const Regular_expression *regex, const char *string) {
+bool full_matches(const Regular_expression *regex, const char *string) {
     return accepts_string_nfa(regex->automaton, string);
 }
