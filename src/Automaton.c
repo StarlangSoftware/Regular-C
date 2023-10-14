@@ -14,6 +14,7 @@ Automaton_ptr create_automaton() {
     result->start_state = NULL;
     result->states = create_hash_set((unsigned int (*)(const void *, int)) hash_function_state,
                                      (int (*)(const void *, const void *)) compare_state);
+    result->index = 0;
     return result;
 }
 
@@ -24,6 +25,15 @@ void free_automaton(Automaton_ptr automaton) {
     }
     free_array_list(list, free);
     free(automaton);
+}
+
+State_ptr create_new_state(Automaton_ptr automaton){
+    char name[4];
+    sprintf(name, "q%d", automaton->index);
+    automaton->index++;
+    State_ptr state = create_state(name, false);
+    add_state(automaton, state);
+    return state;
 }
 
 void add_state(Automaton_ptr automaton, State_ptr state) {

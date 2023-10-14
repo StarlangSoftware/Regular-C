@@ -10,6 +10,7 @@
 struct automaton{
     Hash_set_ptr states;
     State_ptr start_state;
+    int index;
 };
 
 typedef struct automaton Automaton;
@@ -19,6 +20,8 @@ typedef Automaton *Automaton_ptr;
 Automaton_ptr create_automaton();
 
 void free_automaton(Automaton_ptr automaton);
+
+State_ptr create_new_state(Automaton_ptr automaton);
 
 void add_state(Automaton_ptr automaton, State_ptr state);
 
