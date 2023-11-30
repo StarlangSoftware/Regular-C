@@ -3,6 +3,7 @@
 //
 
 #include <stdio.h>
+#include <Memory/Memory.h>
 #include "../src/Automaton.h"
 
 int main(){
@@ -22,5 +23,5 @@ int main(){
     if (accepts_string_dfa(dfa, "1111110")){
         printf("Error for string 1111110\n");
     }
-    free_automaton(dfa);
+    free_dfa_automaton(dfa);
 }

@@ -19,7 +19,9 @@ typedef Automaton *Automaton_ptr;
 
 Automaton_ptr create_automaton();
 
-void free_automaton(Automaton_ptr automaton);
+void free_dfa_automaton(Automaton_ptr automaton);
+
+void free_nfa_automaton(Automaton_ptr automaton);
 
 State_ptr create_new_state(Automaton_ptr automaton);
 

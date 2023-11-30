@@ -3,10 +3,11 @@
 //
 
 #include <stdlib.h>
+#include <Memory/Memory.h>
 #include "Status.h"
 
 Status_ptr create_status() {
-    Status_ptr result = malloc(sizeof(Status));
+    Status_ptr result = malloc_(sizeof(Status), "create_status");
     result->in_parentheses = false;
     result->in_brackets = false;
     result->previous = NULL;
@@ -16,5 +17,5 @@ Status_ptr create_status() {
 }
 
 void free_status(Status_ptr status) {
-    free(status);
+    free_(status);
 }

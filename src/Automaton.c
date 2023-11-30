@@ -6,11 +6,12 @@
 #include <StringUtils.h>
 #include <string.h>
 #include <stdio.h>
+#include <Memory/Memory.h>
 #include "Automaton.h"
 #include "Dictionary/Word.h"
 
 Automaton_ptr create_automaton() {
-    Automaton_ptr result = malloc(sizeof(Automaton));
+    Automaton_ptr result = malloc_(sizeof(Automaton), "create_automaton");
     result->start_state = NULL;
     result->states = create_hash_set((unsigned int (*)(const void *, int)) hash_function_state,
                                      (int (*)(const void *, const void *)) compare_state);
@@ -18,13 +19,14 @@ Automaton_ptr create_automaton() {
     return result;
 }
 
-void free_automaton(Automaton_ptr automaton) {
-    Array_list_ptr list = hash_set_key_list(automaton->states);
-    for (int i = 0; i < list->size; i++){
-        free_state(array_list_get(list, i));
-    }
-    free_array_list(list, free);
-    free(automaton);
+void free_dfa_automaton(Automaton_ptr automaton) {
+    free_hash_set(automaton->states, (void (*)(void *)) free_dfa_state);
+    free_(automaton);
+}
+
+void free_nfa_automaton(Automaton_ptr automaton) {
+    free_hash_set(automaton->states, (void (*)(void *)) free_nfa_state);
+    free_(automaton);
 }
 
 State_ptr create_new_state(Automaton_ptr automaton){
@@ -71,6 +73,7 @@ bool check_string_nfa_recursive(Hash_set_ptr visited, State_ptr current, const c
     if (index < word_size(string)){
         String_ptr ch = char_at(string, index);
         if (check_available_transitions(visited, current, ch->s, string, index + 1)){
+            free_string_ptr(ch);
             return true;
         }
         free_string_ptr(ch);

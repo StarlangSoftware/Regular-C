@@ -3,6 +3,7 @@
 //
 
 #include <stdio.h>
+#include <Memory/Memory.h>
 #include "../src/RegularExpression.h"
 
 void check_match(char* expression, char* word){
@@ -14,6 +15,7 @@ void check_match(char* expression, char* word){
 }
 
 int main(){
+    start_memory_check();
     check_match("s(a(b(cd(mn|öş)+[e\\df]+g)*r)*f)+t", "sabrfabcdmnöşmnef345ffegrft");
     check_match("s(a[lmr]+i|v[eaı]l[sdf]|ayse)m", "sammmim");
     check_match("s(a[lmr]*i|v[eaı]+l[sdf]*|ayse)+m", "saivaaaaalfdsaysem");
@@ -35,4 +37,5 @@ int main(){
     check_match("b-kah0-9", "dah3");
     check_match("\\.\\+\\-\\?", ".+-?");
     check_match("[abc]?d[efg]?", "d");
+    end_memory_check();
 }

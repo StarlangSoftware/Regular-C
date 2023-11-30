@@ -25,8 +25,6 @@ Automaton_ptr convert_to_nfa(char* expression);
 
 bool full_matches(const Regular_expression* regex, const char* string);
 
-void add_transition(char* st, State_ptr from_state, State_ptr to_state);
-
 void add_multiple_transitions(int index1, int index2, State_ptr from_state, State_ptr to_state);
 
 void add_transition_and_update_state(Automaton_ptr automaton, Status_ptr status, char* s);
