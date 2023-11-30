@@ -2,7 +2,6 @@
 // Created by Olcay Taner YILDIZ on 6.10.2023.
 //
 
-#include <stdlib.h>
 #include <Memory/Memory.h>
 #include "State.h"
 #include "StringUtils.h"
@@ -44,6 +43,7 @@ void add_transition_nfa(State_ptr from_state, State_ptr to_state, char *with) {
     if (hash_map_contains(from_state->transitions, with)){
         to_list = hash_map_get(from_state->transitions, with);
         array_list_add(to_list, to_state);
+        free_(with);
     } else {
         to_list = create_array_list();
         array_list_add(to_list, to_state);

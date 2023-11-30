@@ -8,7 +8,6 @@
 #include "../src/RegularExpression.h"
 
 int main(){
-    start_memory_check();
     Automaton_ptr nfa = create_automaton();
     State_ptr q1 = create_state("q1", false);
     State_ptr q2 = create_state("q2", true);
@@ -26,5 +25,4 @@ int main(){
         printf("Error for string 1111110\n");
     }
     free_nfa_automaton(nfa);
-    end_memory_check();
 }

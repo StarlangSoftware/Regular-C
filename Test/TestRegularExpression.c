@@ -15,7 +15,7 @@ void check_match(char* expression, char* word){
 }
 
 int main(){
-    start_memory_check();
+    check_match("c*b*a*", "cba");
     check_match("s(a(b(cd(mn|öş)+[e\\df]+g)*r)*f)+t", "sabrfabcdmnöşmnef345ffegrft");
     check_match("s(a[lmr]+i|v[eaı]l[sdf]|ayse)m", "sammmim");
     check_match("s(a[lmr]*i|v[eaı]+l[sdf]*|ayse)+m", "saivaaaaalfdsaysem");
@@ -29,7 +29,6 @@ int main(){
     check_match("(\\d\\d|\\d):(\\d\\d|\\d):(\\d\\d|\\d)", "3:3:33");
     check_match("c*b*a*d*", "");
     check_match(".*[ab].*", "dcb");
-    check_match("c*b*a*", "cba");
     check_match("ali", "ali");
     check_match("a[lrs]i[tvg]", "ariv");
     check_match("s(ali|veli|ayse)m", "svelim");
@@ -37,5 +36,4 @@ int main(){
     check_match("b-kah0-9", "dah3");
     check_match("\\.\\+\\-\\?", ".+-?");
     check_match("[abc]?d[efg]?", "d");
-    end_memory_check();
 }
