@@ -3,7 +3,6 @@
 //
 
 #include <stdio.h>
-#include <Memory/Memory.h>
 #include "../src/RegularExpression.h"
 
 void check_match(char* expression, char* word){
