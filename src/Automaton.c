@@ -2,7 +2,6 @@
 // Created by Olcay Taner YILDIZ on 6.10.2023.
 //
 
-#include <stdlib.h>
 #include <StringUtils.h>
 #include <string.h>
 #include <stdio.h>
