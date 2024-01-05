@@ -1,17 +1,15 @@
 cmake_minimum_required(VERSION 3.23)
-project(Regular C)
-
+project(Regular)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_FLAGS "-O3")
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+find_package(dictionary_c REQUIRED)
 
 add_library(Regular src/State.c src/State.h src/Automaton.c src/Automaton.h src/RegularExpression.c src/RegularExpression.h src/Status.c src/Status.h)
-target_link_libraries(Regular ${CONAN_LIBS})
+target_link_libraries(Regular dictionary_c::dictionary_c)
 add_executable(TestDfa src/State.c src/State.h src/Automaton.c src/Automaton.h Test/TestDfa.c src/Status.c src/Status.h)
-target_link_libraries(TestDfa ${CONAN_LIBS})
+target_link_libraries(TestDfa dictionary_c::dictionary_c)
 add_executable(TestNfa src/State.c src/State.h src/Automaton.c src/Automaton.h Test/TestNfa.c src/Status.c src/Status.h)
-target_link_libraries(TestNfa ${CONAN_LIBS})
+target_link_libraries(TestNfa dictionary_c::dictionary_c)
 add_executable(TestRegularExpression src/State.c src/State.h src/Automaton.c src/Automaton.h src/RegularExpression.c src/RegularExpression.h Test/TestRegularExpression.c src/Status.c src/Status.h)
-target_link_libraries(TestRegularExpression ${CONAN_LIBS})
+target_link_libraries(TestRegularExpression dictionary_c::dictionary_c)

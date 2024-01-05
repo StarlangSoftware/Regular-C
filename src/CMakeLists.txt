@@ -1,11 +1,9 @@
 cmake_minimum_required(VERSION 3.23)
-project(Regular C)
-
+project(Regular)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_FLAGS "-O3")
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+find_package(dictionary_c REQUIRED)
 
-add_library(Regular src/State.c src/State.h src/Automaton.c src/Automaton.h src/RegularExpression.c src/RegularExpression.h src/Status.c src/Status.h)
-target_link_libraries(Regular ${CONAN_LIBS})
+add_library(Regular State.c State.h Automaton.c Automaton.h RegularExpression.c RegularExpression.h Status.c Status.h)
+target_link_libraries(Regular dictionary_c::dictionary_c)
